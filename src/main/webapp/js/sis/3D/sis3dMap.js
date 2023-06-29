@@ -89,7 +89,7 @@
             this.viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
             // this.scene.screenSpaceCameraController._zoomFactor = 30;
-            // this.scene.screenSpaceCameraController._zoomFactor = 20;
+            this.scene.screenSpaceCameraController._zoomFactor = 20;
             this.scene.screenSpaceCameraController.inertiaSpin  = 1;
             this.scene.screenSpaceCameraController.inertiaZoom   = 1;
 
@@ -474,10 +474,23 @@
         },
 
         resetCamera: function() {
-            this.viewer.camera.setView({
+            var windowPosition = new Cesium.Cartesian2(this.viewer.container.clientWidth / 2, this.viewer.container.clientHeight / 2);
+            var pickRay = this.viewer.scene.camera.getPickRay(windowPosition);
+            var pickPosition = this.viewer.scene.globe.pick(pickRay, this.viewer.scene);
+            var pickPositionCartographic = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(pickPosition);
+            var apilon = pickPositionCartographic.longitude * (180 / Math.PI);
+            var apilat = pickPositionCartographic.latitude * (180 / Math.PI);
+
+            console.log(apilon + " : " + apilat);
+            var currentPosition = this.viewer.camera.positionCartographic;
+
+            var pos = Cesium.Cartesian3.fromDegrees(apilon, apilat, currentPosition.height);
+
+            this.viewer.camera.flyTo({
+                destination: pos,
                 orientation: {
                     heading: 0,
-                    pitch: 0,
+                    pitch: -1.5705708782821275,
                     roll: 0
                 }
             });

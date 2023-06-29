@@ -45,7 +45,9 @@
 
             this.handler.setInputAction(function(evt) {
                 var ray = self.map.scene.camera.getPickRay(evt.position);
-                var earthPoisition = self.map.scene.globe.pick(ray, self.map.scene);
+                // var earthPoisition = self.map.scene.globe.pick(ray, self.map.scene);
+
+                var earthPoisition = self.map.viewer.scene.pickPosition(evt.position);
 
                 var cthPos = self.map.scene.clampToHeight(earthPoisition);
 
@@ -83,7 +85,9 @@
             // MOUSE MOVE
             this.handler.setInputAction(function(evt) {
                 var ray = self.map.scene.camera.getPickRay(evt.endPosition);
-                var newPosition = self.map.scene.globe.pick(ray, self.map.scene);
+                // var newPosition = self.map.scene.globe.pick(ray, self.map.scene);
+                var newPosition = self.map.viewer.scene.pickPosition(evt.endPosition);
+
                 var cthPos = self.map.scene.clampToHeight(newPosition);
 
                 var pos = newPosition;
@@ -363,14 +367,15 @@
 
             this.handler.setInputAction(function (click) {
                 var ray = self.map.scene.camera.getPickRay(click.position);
-                var mousePosition = self.map.scene.globe.pick(ray, sis3d.scene);
+                // var mousePosition = self.map.scene.globe.pick(ray, sis3d.scene);
+                var mousePosition = self.map.viewer.scene.pickPosition(click.position);
 
                 var cartographic = Cesium.Cartographic.fromCartesian(mousePosition);
                 var latitudeString = Cesium.Math.toDegrees(cartographic.latitude);
                 var longitudeString = Cesium.Math.toDegrees(cartographic.longitude);
                 var lhtext = self.map.scene.globe.getHeight(Cesium.Cartographic.fromDegrees(longitudeString, latitudeString));
 
-                var earthPoisition = self.map.scene.globe.pick(ray, self.map.scene);
+                var earthPoisition = self.map.viewer.scene.pickPosition(click.position);
 
                 var cthPos = self.map.scene.clampToHeight(earthPoisition);
 

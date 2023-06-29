@@ -50,6 +50,8 @@
             if (Cesium.PostProcessStageLibrary.isSilhouetteSupported(this.map.scene)) {
 
                 this.map.viewer.screenSpaceEventHandler.setInputAction(function onLeftClick(movement) {
+                    console.log(movement.position);
+                    window.mouseClickPos = movement;
 
                     if(self.infoCondition) {
 
@@ -139,7 +141,7 @@
                             color: "rgba(255, 255, 255, 0)",
                         });
 
-                        self.feature["pickedFeature"].color = new Cesium.Color(1, 1, 1, 0);
+                        if (Cesium.defined(self.feature["pickedFeature"])) self.feature["pickedFeature"].color = new Cesium.Color(1, 1, 1, 0);
                 },
                 Cesium.ScreenSpaceEventType.LEFT_CLICK);
             }
