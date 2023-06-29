@@ -1,0 +1,360 @@
+// var sis = null;
+var sis3d, sisDraw3d, sisLayer3d = null;
+var sisSearch;
+var map3dDual = null;
+
+// 레이어 목록
+var boundary = null; // 행정구역
+var jijuk = null; // 지적도
+
+$(window).on("load", function () {
+
+    // 2D Map Init
+    // sis = new SisMap("map", {
+    //     baseMap: true
+    // });
+
+    // 3D Map Init
+    sis3d = new Sis3D("map", {});
+
+    // 3D Draw
+    sisDraw3d = new Sis3DDraw(sis3d);
+
+    // 3D Layer
+    sisLayer3d = new Sis3DLayer(sis3d);
+
+    // 검색
+    sisSearch = new SearchAddr({
+        keywordID: "keyword",
+        resultID: "itemsWrap",
+        countID: "count"
+    });
+
+    //
+    $("#mapMenuWrap .btn").on("click", (e) => {
+        var isActive = $(e.target).closest(".btn").hasClass("active");
+
+        // 팝업안에 메뉴클릭했을때
+        if ($(e.target).closest(".menuPop").length) return;
+
+        $("#mapMenuWrap .btn").removeClass("active");
+        $("#mapMenuWrap .menuPop").hide();
+
+        if (!isActive) {
+            $(e.target).closest(".btn").toggleClass("active");
+            $(e.target).closest(".btn").find(".menuPop").toggle();
+        }
+
+        // 건물정보 버튼 클릭했을 때
+        var target = e.target instanceof SVGPathElement ? e.target.parentElement : e.target;
+        if ($(target).hasClass("buld-info") && $(target).closest(".btn").hasClass("active")) {
+            sisLayer3d.infoCondition = true;
+        } else {
+            sisLayer3d.infoCondition = false;
+        }
+    });
+
+    // 드론 3D영상 추가/삭제
+    $("input[type=checkbox][name=drone]").on("click", function (e) {
+        var drone = sisLayer3d.loadPrim[e.target.value + "_drone"];;
+
+        if ($(e.target).prop("checked")) {
+            if(!drone) {
+                sisLayer3d.addDroneModel(e.target.value);
+                sisLayer3d.addBuldFromAsset(e.target.value, 1682965);
+            }
+            else {
+                drone.show = true;
+            }
+        } else {
+            drone.show = false;
+
+            // 모달창 숨김김
+            $("#info-modal").hide();
+        }
+    });
+
+    $("#keyword").on("keyup", (evt) => {
+        if(evt.key == "Enter") {
+            sisSearch.searchName(1);
+            $("#searchResultWrap").show();
+        }
+    });
+
+    // 주소검색
+    $("#btnSearch").on("click", () => {
+        sisSearch.searchName(1);
+        $("#searchResultWrap").show();
+    });
+
+    $("#btnSearchClose").on("click", () => {
+        $("#searchResultWrap").hide();
+    });
+
+    // 거리측정
+    $("#calDis").on("click", function (e) {
+        if ($("#calDis").hasClass("active")) {
+            sisDraw3d.stopDraw();
+        } else {
+            sisDraw3d.startDraw("line", true);
+
+            $("#calDis").addClass("active")
+        }
+    });
+
+    // 표고측정
+    $("#calHeight").on("click", function (e) {
+        if ($("#calHeight").hasClass("active")) {
+            sisDraw3d.stopDraw();
+        } else {
+            sisDraw3d.getHeight("height", true);
+
+            $("#calHeight").addClass("active");
+        }
+    });
+
+    // 면적측정
+    $("#calArea").on("click", function () {
+        if ($("#calArea").hasClass("active")) {
+            sisDraw3d.stopDraw();
+        } else {
+            sisDraw3d.startDraw("polygon", true);
+
+            $("#calArea").addClass("active");
+        }
+    });
+
+    // 맵 초기화
+    $("#clearMap").on("click", function () {
+        sisDraw3d.clearDraw();
+        sisDraw3d.stopDraw();
+        sisSearch.dataSources.entities.removeAll();
+    });
+
+
+    // 배경지도 변경
+    $("input[name=baseMap]").on("change", (e) => {
+        var id = e.target.id;
+        sis3d.changeBaseMap(id);
+    });
+
+    // 3D 건물
+    $("input[name=uild3d]").on("change", (e) => {
+        var id = e.target.id;
+
+        if (id == 'build3dOn') {
+
+        }
+    });
+
+    $(".menuPop .menuWrap").on("click", (e) => {
+        var target = $(e.target).closest(".menuWrap");
+        target.toggleClass("active");
+
+        var id = target.attr("id");
+        var visible = target.hasClass("active");
+
+        if (id == "lsmd_adm_sect_sgg_jn") {
+            boundary.show = visible;
+        }
+
+        if (id == "lsmd_cont_ldreg") {
+            jijuk.show = visible;
+        }
+    })
+
+    // 레이어 추가
+    boundary = addWmsLayer("lsmd_adm_sect_sgg_jn", false);
+    jijuk = addWmsLayer("lsmd_cont_ldreg", true);
+
+    // 나침반 클릭
+    // var obj = document.querySelector("#compassObj");
+    // var compassSvg = obj.contentDocument.querySelector("svg")
+    // $(compassSvg).on("click", function(e) {
+    //     sis.map.getView().setRotation(0);
+    // });
+
+    // Modal Draggable
+    $("#info-modal").draggable({
+        cancel: ".modal-body, .modal-footer",
+        containment: 'parent'
+    });
+
+    // Modal Hide
+    $(".modal-close-btn").on("click", function (e) {
+        sisLayer3d.removePickedFeatureColor();
+        $("#info-modal").hide();
+    });
+
+    // 화면 저장
+    $("#saveScreen").on("click", function (e) {
+        sis3d.viewer.render();
+        html2canvas(document.querySelector("#map"), {
+            allowTaint: false,
+            useCORS: true,
+        }).then(function (canvas) {
+            var image = canvas.toDataURL('image/png', 1.0);
+            downloadURI(image, "화면저장.png");
+        })
+    });
+
+    // 화면 공유
+    // $("#shareScreen").on("click", function (e) {
+    //     prompt("Ctrl + C 버튼을 눌러 복사하세요.",
+    //         'http://localhost:8081/mapMain.do?share=Y'
+    //         + '&lon=' + sis3d.centerPosition.lon
+    //         + '&lat=' + sis3d.centerPosition.lat
+    //         + '&height=' + sis3d.centerPosition.height
+    //         + '&pitch=' + sis3d.centerPosition.pitch
+    //         + '&roll=' + sis3d.centerPosition.roll
+    //         + '&height=' + sis3d.centerPosition.height
+    //     );
+    // });
+
+    // Zoom In
+    $("#zoomIn").on("click", function () {
+        sis3d.zoomIn();
+    });
+
+    $("#zoomOut").on("click", function () {
+        sis3d.zoomOut();
+    });
+
+    test();
+});
+
+async function test() {
+
+    const resource = new Cesium.Resource({
+        url: "/map/getTopojson.do",
+        queryParameters: {
+            target: 'or3d'
+        }
+    })
+
+    const dataSource = await Cesium.GeoJsonDataSource.load(resource).then(function (item) {
+        var entities = [];
+
+        item.entities.values.forEach(function (entity, idx) {
+            var polygon = entity.polygon;
+            var hierarchy = polygon.hierarchy.getValue();
+            var positions = hierarchy.positions;
+
+            var coords = [];
+            var arrTmp = [];
+
+            if (positions.length > 0) {
+                for (var i = 0; i < positions.length; i++) {
+                    var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[i]);
+
+                    arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
+                }
+
+                var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[0]);
+                arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
+                coords.push(arrTmp);
+
+                polygon = turf.polygon(coords);
+
+                var area = turf.area(polygon);
+                var units = "㎡";
+                if (area >= 1000000) {
+                    area = area / 1000000;
+                    units = "㎢";
+                }
+                area = area.toFixed(2).toString();
+                area = numberWithCommas(area) + " " + units;
+
+                var centerCoords = turf.pointOnFeature(polygon).geometry.coordinates;
+                var center = Cesium.Cartesian3.fromDegrees(centerCoords[0], centerCoords[1]);
+                var cthPos = sis3d.scene.clampToHeight(center);
+
+                var pos = center;
+
+                if (cthPos) pos = cthPos;
+
+                let ent = sis3d.viewer.entities.add({
+                    polyline: {
+                        positions: entity.polygon.hierarchy.getValue().positions,
+                        width: 1,
+                        material: Cesium.Color.fromBytes(255, 158, 23, 255),
+                        classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
+                        clampToGround: true
+                    },
+                });
+            }
+        });
+    });
+}
+
+function downloadURI(uri, name) {
+    var anchor = document.createElement('a');
+    anchor.setAttribute('href', uri); //path
+    anchor.setAttribute('download', name); //file name
+    document.body.appendChild(anchor);
+    anchor.click(); //<a> tag click
+    anchor.parentNode.removeChild(anchor);
+}
+
+function compassClickEvt() {
+    sis3d.resetCamera();
+}
+
+function addWmsLayer(name, show) {
+    var provider = new Cesium.WebMapServiceImageryProvider({
+        // 제작한 국가지점번호 레이어 가져오기
+        id: name,
+        url: '/map/proxy/wms.do',
+        parameters: {
+            format: 'image/png',
+            transparent: 'true',
+            tiled: 'true',
+            version: '1.3.0',
+        },
+        layers: name,
+        visible: show
+    });
+
+    var lyr = new Cesium.ImageryLayer(provider);
+    lyr.show = show;
+
+
+    var imageryLayers = sis3d.scene.imageryLayers;
+
+    imageryLayers.add(lyr);
+
+    return lyr;
+}
+
+function removeWmsLayer(name) {
+    if (name) {
+        sis3d.scene.globe.imageryLayers._layers.forEach(function (item, idx) {
+            if (item._url !== undefined && item._url.indexOf(name) > -1) {
+                sis3d.scene.globe.imageryLayers.remove(sis3d.scene.globe.imageryLayers._layers[idx]);
+            }
+        });
+    } else {
+        sis3d.scene.globe.imageryLayers._layers.forEach(function (item, idx) {
+            if (idx > 0) {
+                sis3d.scene.globe.imageryLayers.remove(sis3d.scene.globe.imageryLayers._layers[idx]);
+            }
+        });
+    }
+}
+
+(function (window, $) {
+    /* Combobox 실행대기 후 실행 */
+    $.waitForLazyRunners = function (callback) {
+        var run = function () {
+            if (!$.runner || $.runner <= 0) {
+                clearInterval(interval);
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            } else {
+                //console.log("wait...");
+            }
+        };
+        var interval = setInterval(run, 30);
+    }
+})(window, jQuery);
