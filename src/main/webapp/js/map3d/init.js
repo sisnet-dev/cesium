@@ -7,6 +7,11 @@ var map3dDual = null;
 var boundary = null; // 행정구역
 var jijuk = null; // 지적도
 
+// 항공영상
+var airphoto2019 = null;
+var airphoto2021 = null;
+var airphoto2022 = null;
+
 $(window).on("load", function () {
 
     // 2D Map Init
@@ -135,7 +140,12 @@ $(window).on("load", function () {
     // 배경지도 변경
     $("input[name=baseMap]").on("change", (e) => {
         var id = e.target.id;
-        sis3d.changeBaseMap(id);
+
+        if(id == "vworldMap" || id == "hybridMap") {
+            sis3d.changeBaseMap(id);
+        } else {
+
+        }
     });
 
     // 3D 건물
@@ -161,7 +171,12 @@ $(window).on("load", function () {
         if (id == "lsmd_cont_ldreg") {
             jijuk.show = visible;
         }
-    })
+    });
+
+    // 항공영상 추가
+    // airphoto2019 = addWmtsLayer("airphoto2019", false);
+    // airphoto2021 = addWmtsLayer("airphoto2021_new", false);
+    // airphoto2022 = addWmtsLayer("test", true);
 
     // 레이어 추가
     boundary = addWmsLayer("lsmd_adm_sect_sgg_jn", false);
@@ -298,6 +313,48 @@ function downloadURI(uri, name) {
 
 function compassClickEvt() {
     sis3d.resetCamera();
+}
+
+function addWmtsLayer(name, show) {
+    var epsg5181Rectangle = Cesium.Rectangle.fromDegrees(-142.8858704339545, 23.285299752866333, 127.71936052145797, 89.40542593804888);
+    var epsg5181 = new Cesium.GeographicTilingScheme({
+        rectangle: epsg5181Rectangle,
+        numberOfLevelZeroTilesX: 2,
+        numberOfLevelZeroTilesY: 8,
+        // ellipsoid: ?,
+    });
+
+    const lyr = new Cesium.WebMapTileServiceImageryProvider({
+        url : '/map/proxy/gwc.do',
+        layer : name,
+        style : '',
+        format : 'image/png',
+        tileMatrixSetID : "EPSG:5181_" + name,
+        tileMatrixLabels : [
+            "EPSG:5181_" + name + ":0",
+            "EPSG:5181_" + name + ":1",
+            "EPSG:5181_" + name + ":2",
+            "EPSG:5181_" + name + ":3",
+            "EPSG:5181_" + name + ":4",
+            "EPSG:5181_" + name + ":5",
+            "EPSG:5181_" + name + ":6",
+            "EPSG:5181_" + name + ":7",
+            "EPSG:5181_" + name + ":8",
+            "EPSG:5181_" + name + ":9",
+            "EPSG:5181_" + name + ":10",
+            "EPSG:5181_" + name + ":11",
+            "EPSG:5181_" + name + ":12"
+        ],
+        rectangle: Cesium.Rectangle.fromDegrees(-142.8858704339545, 23.285299752866333, 127.71936052145797, 89.40542593804888),
+        tilingScheme: new Cesium.GeographicTilingScheme({
+            numberOfLevelZeroTilesX: 3,
+            numberOfLevelZeroTilesY:2,
+        }),
+        // maximumLevel: 19,
+    });
+    sis3d.scene.imageryLayers.addImageryProvider(lyr);
+
+    return lyr;
 }
 
 function addWmsLayer(name, show) {

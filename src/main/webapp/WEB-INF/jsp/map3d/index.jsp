@@ -105,35 +105,17 @@
                 <i class="fa-solid fa-gear icon"></i>
                 <span class="txt">지도설정</span>
 
-                <div class="menuPop" style="padding: 15px; right: 0; width: 490px;">
+                <div class="menuPop" style="padding: 15px;">
                     <div class="selectWrap">
                         <div>
                             <span class="title">배경지도</span>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="baseMap" id="baseMap" checked>
-                                <label class="form-check-label" for="baseMap">
-                                    2023
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="baseMap" id="airPhoto">
-                                <label class="form-check-label" for="airPhoto">
-                                    2022
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="baseMap" id="base2021">
-                                <label class="form-check-label" for="base2021">
-                                    2021
-                                </label>
-                            </div>
-                            <div class="form-check">
+                            <div class="form-check" style="width:85px">
                                 <input class="form-check-input" type="radio" name="baseMap" id="vworldMap" checked>
                                 <label class="form-check-label" for="vworldMap">
                                     일반지도
                                 </label>
                             </div>
-                            <div class="form-check">
+                            <div class="form-check" style="width:85px">
                                 <input class="form-check-input" type="radio" name="baseMap" id="hybridMap">
                                 <label class="form-check-label" for="hybridMap">
                                     스카이뷰
@@ -143,13 +125,13 @@
 
                         <div>
                             <span class="title">3D건물</span>
-                            <div class="form-check">
+                            <div class="form-check" style="width:85px">
                                 <input class="form-check-input" type="radio" name="uild3d" id="build3dOn" >
                                 <label class="form-check-label" for="build3dOn">
                                     활성화
                                 </label>
                             </div>
-                            <div class="form-check">
+                            <div class="form-check" style="width:85px">
                                 <input class="form-check-input" type="radio" name="uild3d" id="build3dOff" checked>
                                 <label class="form-check-label" for="build3dOff">
                                     비활성화

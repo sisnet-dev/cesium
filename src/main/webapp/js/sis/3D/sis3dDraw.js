@@ -85,29 +85,30 @@
             // MOUSE MOVE
             this.handler.setInputAction(function(evt) {
                 var ray = self.map.scene.camera.getPickRay(evt.endPosition);
-                // var newPosition = self.map.scene.globe.pick(ray, self.map.scene);
+                // var globePos = self.map.scene.globe.pick(ray, self.map.scene);
                 var newPosition = self.map.viewer.scene.pickPosition(evt.endPosition);
+                //
+                // var cthPos = self.map.scene.clampToHeight(newPosition);
+                //
+                // var pos;
+                // if(cthPos) pos = cthPos;
+                // else pos = globePos;
 
-                var cthPos = self.map.scene.clampToHeight(newPosition);
+                // if(!Cesium.defined(self.floatingPoint)) {
+                //     self.floatingPoint = self.drawPoint(pos, {
+                //         size: 10,
+                //         color: Cesium.Color.BLUE
+                //     });
+                // } else {
+                //     self.floatingPoint.position.setValue(pos);
+                // }
 
-                var pos = newPosition;
-                if(cthPos) pos = cthPos;
-
-                if(!Cesium.defined(self.floatingPoint)) {
-                    self.floatingPoint = self.drawPoint(pos, {
-                        size: 10,
-                        color: Cesium.Color.BLUE
-                    });
-                } else {
-                    self.floatingPoint.position.setValue(pos);
-                }
-
-                if(self.activeShapePoints.length > 0) {
-                    if(Cesium.defined(pos)) {
-                        self.activeShapePoints.pop();
-                        self.activeShapePoints.push(pos);
-                    }
-                }
+                // if(self.activeShapePoints.length > 0) {
+                //     if(Cesium.defined(pos)) {
+                //         self.activeShapePoints.pop();
+                //         self.activeShapePoints.push(pos);
+                //     }
+                // }
             }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
             this.handler.setInputAction(function(){
@@ -139,9 +140,7 @@
                 point: {
                     color: color,
                     pixelSize: pixelSize,
-                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 },
-                eyeOffset: new Cesium.Cartesian3(0, 8000000, 0)
             });
         },
 

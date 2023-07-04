@@ -1,4 +1,4 @@
-$header-height: 40px;
+$header-height: 0;
 $logo-width: 105px;
 $header-menu-width: 340px;
 
@@ -29,6 +29,7 @@ $header-menu-width: 340px;
 
 #headerWrap {
     position: absolute;
+    display: none;
     top: 0;
     left: 0;
     right: 0;
