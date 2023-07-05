@@ -123,21 +123,21 @@
                             </div>
                         </div>
 
-                        <div>
-                            <span class="title">3D건물</span>
-                            <div class="form-check" style="width:85px">
-                                <input class="form-check-input" type="radio" name="uild3d" id="build3dOn" >
-                                <label class="form-check-label" for="build3dOn">
-                                    활성화
-                                </label>
-                            </div>
-                            <div class="form-check" style="width:85px">
-                                <input class="form-check-input" type="radio" name="uild3d" id="build3dOff" checked>
-                                <label class="form-check-label" for="build3dOff">
-                                    비활성화
-                                </label>
-                            </div>
-                        </div>
+<%--                        <div>--%>
+<%--                            <span class="title">3D건물</span>--%>
+<%--                            <div class="form-check" style="width:85px">--%>
+<%--                                <input class="form-check-input" type="radio" name="uild3d" id="build3dOn" >--%>
+<%--                                <label class="form-check-label" for="build3dOn">--%>
+<%--                                    활성화--%>
+<%--                                </label>--%>
+<%--                            </div>--%>
+<%--                            <div class="form-check" style="width:85px">--%>
+<%--                                <input class="form-check-input" type="radio" name="uild3d" id="build3dOff" checked>--%>
+<%--                                <label class="form-check-label" for="build3dOff">--%>
+<%--                                    비활성화--%>
+<%--                                </label>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
                     </div>
                 </div>
             </div>
