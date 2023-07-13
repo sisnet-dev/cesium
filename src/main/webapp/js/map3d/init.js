@@ -19,6 +19,18 @@ $(window).on("load", function () {
     //     baseMap: true
     // });
 
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
+        alert(
+            "해당 시스템은 구 버전의 브라우저를 지원하지 않습니다. 크롬 혹은 엣지를 통해 접속해주세요."
+        );
+
+        window.location = "microsoft-edge:" + window.location;
+
+        // setTimeout(function () {
+        //     window.location = "https://go.microsoft.com/fwlink/?linkid=2135547";
+        // }, 1);
+    }
+
     // 3D Map Init
     sis3d = new Sis3D("map", {});
 
