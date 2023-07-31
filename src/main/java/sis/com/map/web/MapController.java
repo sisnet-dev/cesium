@@ -35,15 +35,13 @@ public class MapController {
         return "map3d/index";
     }
 
-    @RequestMapping("/test1.do")
-    public String test1() throws Exception {
-        return "map3d/test1";
-    }
-
-    @RequestMapping("/test2.do")
-    public String test2() throws Exception {
-        return "map3d/test2";
-    }
+//    @RequestMapping("/edgeSetting.do")
+//    public String edgeSetting(HttpServletRequest request, ModelMap model) throws Exception {
+//
+//
+//
+//        return "map3d/index";
+//    }
 
     @RequestMapping("/map/getTopojson.do")
     public void getTopojson(String target, HttpServletResponse response) throws Exception {
