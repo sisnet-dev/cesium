@@ -24,10 +24,17 @@
 
         },
 
-        addBuldFromAsset: async function(name, assetId) {
+        addBuldFromAsset: async function(name) {
 
             var tileset, clickHandler;
             var self = this;
+
+            var assetId;
+            droneList.forEach(function(item, idx) {
+                if(name == item.target) {
+                    assetId = item.assetId
+                }
+            })
 
             tileset = await Cesium.Cesium3DTileset.fromIonAssetId(assetId,
                 {
@@ -152,6 +159,7 @@
         },
 
         addDroneModel: async function(name) {
+
             const droneTileset = await Cesium.Cesium3DTileset.fromUrl(
                 'http://sisnet.iptime.org:8092/cslist/' + name + '/' + name + '.json',
                 {
@@ -171,7 +179,13 @@
             this.map.scene.primitives.add(droneTileset);
             this.loadPrim[name + "_drone"] = droneTileset;
 
-            const heightOffset = 22;
+            var height;
+            droneList.forEach(function(item, idx) {
+                if(name == item.target) {
+                    height = item.height
+                }
+            })
+            const heightOffset = 23;
             const boundingSphere = droneTileset.boundingSphere;
             const cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);
             const surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
@@ -241,14 +255,19 @@
                     case "02004": name = "생활편익시설"; break;
                     case "03001": name = "소매점"; break;
                     case "03002": name = "휴게음식점"; break;
+                    case "03004": name = "일반목욕장"; break;
                     case "03024": name = "개방공중화장실"; break;
+                    case "03104": name = "소방서"; break;
                     case "03999": name = "기타제1종근생"; break;
                     case "04402": name = "사무소"; break;
                     case "04999": name = "기타제2종근생"; break;
+                    case "05101": name = "교회"; break;
                     case "08101": name = "초등학교"; break;
                     case "08102": name = "중학교"; break;
                     case "08201": name = "유치원"; break;
+                    case "08202": name = "영유아보육시설 "; break;
                     case "08999": name = "기타교육연구및복지시설"; break;
+                    case "15001": name = "고시원"; break;
                     default:
                 }
             }else if(codeSe === 'JIJUK') {
@@ -265,6 +284,69 @@
                 })
             }
             return name;
+        },
+
+        addJijuk: async function(name) {
+            const resource = new Cesium.Resource({
+                url: "/map/getTopojson.do",
+                queryParameters: {
+                    target: name
+                }
+            })
+
+            const dataSource = await Cesium.GeoJsonDataSource.load(resource).then(function (item) {
+                var entities = [];
+
+                item.entities.values.forEach(function (entity, idx) {
+                    var polygon = entity.polygon;
+                    var hierarchy = polygon.hierarchy.getValue();
+                    var positions = hierarchy.positions;
+
+                    var coords = [];
+                    var arrTmp = [];
+
+                    if (positions.length > 0) {
+                        for (var i = 0; i < positions.length; i++) {
+                            var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[i]);
+
+                            arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
+                        }
+
+                        var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[0]);
+                        arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
+                        coords.push(arrTmp);
+
+                        polygon = turf.polygon(coords);
+
+                        var area = turf.area(polygon);
+                        var units = "㎡";
+                        if (area >= 1000000) {
+                            area = area / 1000000;
+                            units = "㎢";
+                        }
+                        area = area.toFixed(2).toString();
+                        area = numberWithCommas(area) + " " + units;
+
+                        var centerCoords = turf.pointOnFeature(polygon).geometry.coordinates;
+                        var center = Cesium.Cartesian3.fromDegrees(centerCoords[0], centerCoords[1]);
+                        var cthPos = sis3d.scene.clampToHeight(center);
+
+                        var pos = center;
+
+                        if (cthPos) pos = cthPos;
+
+                        let ent = sis3d.viewer.entities.add({
+                            polyline: {
+                                positions: entity.polygon.hierarchy.getValue().positions,
+                                width: 1,
+                                material: Cesium.Color.fromBytes(255, 158, 23, 255),
+                                classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
+                                clampToGround: true
+                            },
+                        });
+                    }
+                });
+            });
         }
 
     };

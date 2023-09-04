@@ -26,6 +26,18 @@
           and target = #{target}
     </select>
 
+    <select id="getCityGMLInfo" resultType="sis.com.map.service.JsonVO">
+        select
+            id,
+            target,
+            asset_id,
+            height,
+            name
+        from
+            jngis.lsmd_cont_ldreg_json
+        order by id
+    </select>
+
     <select id="getJijuk" parameterType="String" resultType="sis.com.map.service.CodeVO">
         select
             resi_bupd_code as juso_code,

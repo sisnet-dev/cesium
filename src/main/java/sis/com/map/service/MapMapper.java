@@ -11,5 +11,7 @@ public interface MapMapper {
 
     JsonVO getTopojson(String target) throws Exception;
 
+    List<JsonVO> getCityGMLInfo() throws Exception;
+
     CodeVO getJijuk(String jusoCode) throws Exception;
 }

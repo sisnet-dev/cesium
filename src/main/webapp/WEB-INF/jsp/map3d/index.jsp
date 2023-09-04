@@ -182,14 +182,19 @@
                 <i class="fa-solid fa-helicopter icon"></i>
                 <span class="txt">드론영상</span>
 
-                <div class="menuPop" style="text-align: left;">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="or3d2" id="drone002" name="drone">
-                        <label class="form-check-label" for="drone002">
-                            오룡지구
-                        </label>
-                    </div>
-
+                <div id="drone-list" class="menuPop" style="text-align: left;">
+<%--                    <div class="form-check">--%>
+<%--                        <input class="form-check-input" type="checkbox" value="or3d2" id="drone002" name="drone">--%>
+<%--                        <label class="form-check-label" for="drone002">--%>
+<%--                            오룡지구--%>
+<%--                        </label>--%>
+<%--                    </div>--%>
+<%--                    <div class="form-check">--%>
+<%--                        <input class="form-check-input" type="checkbox" value="naju1" id="drone003" name="drone">--%>
+<%--                        <label class="form-check-label" for="drone003">--%>
+<%--                            나주혁신도시--%>
+<%--                        </label>--%>
+<%--                    </div>--%>
                 </div>
             </div>
 

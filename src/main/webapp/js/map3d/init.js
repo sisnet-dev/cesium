@@ -2,6 +2,7 @@
 var sis3d, sisDraw3d, sisLayer3d = null;
 var sisSearch;
 var map3dDual = null;
+var droneList = null;
 
 // 레이어 목록
 var boundary = null; // 행정구역
@@ -35,6 +36,8 @@ $(window).on("load", function () {
         countID: "count"
     });
 
+    initDroneList();
+
     //
     $("#mapMenuWrap .btn").on("click", (e) => {
         var isActive = $(e.target).closest(".btn").hasClass("active");
@@ -66,7 +69,8 @@ $(window).on("load", function () {
         if ($(e.target).prop("checked")) {
             if(!drone) {
                 sisLayer3d.addDroneModel(e.target.value);
-                sisLayer3d.addBuldFromAsset(e.target.value, 1682965);
+                sisLayer3d.addBuldFromAsset(e.target.value);
+                sisLayer3d.addJijuk(e.target.value)
             }
             else {
                 drone.show = true;
@@ -235,72 +239,110 @@ $(window).on("load", function () {
         sis3d.zoomOut();
     });
 
-    test();
+    // test();
+
+
 });
 
-async function test() {
+function initDroneList() {
+    $.ajax({
+        url: PATH + "/map/getCityGMLInfo.do",
+        type: "GET",
+        async: false,
+        success: function(res) {
+            droneList = res.rslt;
+            var contents = $("#drone-list");
+            var html = "";
+            $.each(droneList, function(idx, item) {
 
-    const resource = new Cesium.Resource({
-        url: "/map/getTopojson.do",
-        queryParameters: {
-            target: 'or3d'
+                var divE = document.createElement("div");
+                divE.classList.add("form-check");
+                var inputE = document.createElement("input");
+                inputE.classList.add("form-check-input");
+                inputE.type = "checkbox";
+                inputE.value = item.target;
+                inputE.id = "drone" + idx;
+                inputE.name = "drone"
+                divE.append(inputE);
+                var labelE = document.createElement("label");
+                labelE.classList.add("form-check-label");
+                labelE.htmlFor = "drone" + idx;
+                labelE.innerText = item.name;
+                divE.append(labelE)
+                contents.append(divE);
+
+            });
+        },
+        error: function(err) {
+            console.log(err);
         }
-    })
-
-    const dataSource = await Cesium.GeoJsonDataSource.load(resource).then(function (item) {
-        var entities = [];
-
-        item.entities.values.forEach(function (entity, idx) {
-            var polygon = entity.polygon;
-            var hierarchy = polygon.hierarchy.getValue();
-            var positions = hierarchy.positions;
-
-            var coords = [];
-            var arrTmp = [];
-
-            if (positions.length > 0) {
-                for (var i = 0; i < positions.length; i++) {
-                    var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[i]);
-
-                    arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
-                }
-
-                var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[0]);
-                arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
-                coords.push(arrTmp);
-
-                polygon = turf.polygon(coords);
-
-                var area = turf.area(polygon);
-                var units = "㎡";
-                if (area >= 1000000) {
-                    area = area / 1000000;
-                    units = "㎢";
-                }
-                area = area.toFixed(2).toString();
-                area = numberWithCommas(area) + " " + units;
-
-                var centerCoords = turf.pointOnFeature(polygon).geometry.coordinates;
-                var center = Cesium.Cartesian3.fromDegrees(centerCoords[0], centerCoords[1]);
-                var cthPos = sis3d.scene.clampToHeight(center);
-
-                var pos = center;
-
-                if (cthPos) pos = cthPos;
-
-                let ent = sis3d.viewer.entities.add({
-                    polyline: {
-                        positions: entity.polygon.hierarchy.getValue().positions,
-                        width: 1,
-                        material: Cesium.Color.fromBytes(255, 158, 23, 255),
-                        classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
-                        clampToGround: true
-                    },
-                });
-            }
-        });
     });
+
 }
+
+// async function test() {
+//
+//     const resource = new Cesium.Resource({
+//         url: "/map/getTopojson.do",
+//         queryParameters: {
+//             target: 'or3d'
+//         }
+//     })
+//
+//     const dataSource = await Cesium.GeoJsonDataSource.load(resource).then(function (item) {
+//         var entities = [];
+//
+//         item.entities.values.forEach(function (entity, idx) {
+//             var polygon = entity.polygon;
+//             var hierarchy = polygon.hierarchy.getValue();
+//             var positions = hierarchy.positions;
+//
+//             var coords = [];
+//             var arrTmp = [];
+//
+//             if (positions.length > 0) {
+//                 for (var i = 0; i < positions.length; i++) {
+//                     var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[i]);
+//
+//                     arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
+//                 }
+//
+//                 var coord = sis3d.scene.globe.ellipsoid.cartesianToCartographic(positions[0]);
+//                 arrTmp.push([coord.longitude * (180 / Math.PI), coord.latitude * (180 / Math.PI)]);
+//                 coords.push(arrTmp);
+//
+//                 polygon = turf.polygon(coords);
+//
+//                 var area = turf.area(polygon);
+//                 var units = "㎡";
+//                 if (area >= 1000000) {
+//                     area = area / 1000000;
+//                     units = "㎢";
+//                 }
+//                 area = area.toFixed(2).toString();
+//                 area = numberWithCommas(area) + " " + units;
+//
+//                 var centerCoords = turf.pointOnFeature(polygon).geometry.coordinates;
+//                 var center = Cesium.Cartesian3.fromDegrees(centerCoords[0], centerCoords[1]);
+//                 var cthPos = sis3d.scene.clampToHeight(center);
+//
+//                 var pos = center;
+//
+//                 if (cthPos) pos = cthPos;
+//
+//                 let ent = sis3d.viewer.entities.add({
+//                     polyline: {
+//                         positions: entity.polygon.hierarchy.getValue().positions,
+//                         width: 1,
+//                         material: Cesium.Color.fromBytes(255, 158, 23, 255),
+//                         classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
+//                         clampToGround: true
+//                     },
+//                 });
+//             }
+//         });
+//     });
+// }
 
 function downloadURI(uri, name) {
     var anchor = document.createElement('a');

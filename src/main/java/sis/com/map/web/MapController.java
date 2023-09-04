@@ -59,13 +59,17 @@ public class MapController {
 
     }
 
+    @RequestMapping("/map/getCityGMLInfo.do")
+    public String getCityGMLInfo(ModelMap model) throws Exception {
+        List<JsonVO> result = mapService.getCityGMLInfo();
+        model.addAttribute("rslt", result);
+        return "jsonView";
+    }
+
     @RequestMapping("/map/getJijuk.do")
-    public String getJijuk(ModelMap model, String jusoCode, HttpServletResponse response) throws Exception {
-
+    public String getJijuk(ModelMap model, String jusoCode) throws Exception {
         CodeVO result = mapService.getJijuk(jusoCode);
-
         model.addAttribute("codeVo", result);
-
         return "jsonView";
     }
 

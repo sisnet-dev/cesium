@@ -23,6 +23,11 @@ public class MapServiceImpl implements MapService {
     }
 
     @Override
+    public List<JsonVO> getCityGMLInfo() throws Exception {
+        return mapMapper.getCityGMLInfo();
+    }
+
+    @Override
     public CodeVO getJijuk(String jusoCode) throws Exception {
         return mapMapper.getJijuk(jusoCode);
     }
