@@ -240,35 +240,47 @@
                     case '0': name = '지상'; break;
                     case '1': name = '지하'; break;
                     case '2': name = '공중'; break;
-                    default:
+                    default: name = "-";
                 }
             }else if(codeSe === 'BUL_DPN_SE') {
                 switch(code) {
                     case "M": name = '주건물'; break;
                     case "S": name = '종속건물'; break;
-                    default:
+                    default: name = "-";
                 }
             }else if(codeSe === 'BDTYP_CD') {
                 switch(code) {
                     case "01003": name = "다가구주택"; break;
+                    case "01001": name = "단독주택"; break;
                     case "02001": name = "아파트"; break;
                     case "02004": name = "생활편익시설"; break;
                     case "03001": name = "소매점"; break;
                     case "03002": name = "휴게음식점"; break;
                     case "03004": name = "일반목욕장"; break;
                     case "03024": name = "개방공중화장실"; break;
+                    case "03102": name = "경찰서"; break;
+                    case "03103": name = "파출소"; break;
                     case "03104": name = "소방서"; break;
+                    case "03199": name = "기타공공시설"; break;
                     case "03999": name = "기타제1종근생"; break;
+                    case "04001": name = "일반음식점"; break;
                     case "04402": name = "사무소"; break;
                     case "04999": name = "기타제2종근생"; break;
                     case "05101": name = "교회"; break;
+                    case "06301": name = "상점"; break;
+                    case "08001": name = "-"; break;
                     case "08101": name = "초등학교"; break;
                     case "08102": name = "중학교"; break;
                     case "08201": name = "유치원"; break;
                     case "08202": name = "영유아보육시설 "; break;
+                    case "08299": name = "기타아동관련시설"; break;
                     case "08999": name = "기타교육연구및복지시설"; break;
+                    case "10101": name = "-"; break;
+                    case "10202": name = "연수원"; break;
+                    case "14001": name = "창고"; break;
                     case "15001": name = "고시원"; break;
-                    default:
+                    case "16001": name = "-"; break;
+                    default: name = "-";
                 }
             }else if(codeSe === 'JIJUK') {
                 $.ajax({
